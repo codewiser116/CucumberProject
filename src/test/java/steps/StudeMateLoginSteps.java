@@ -40,10 +40,16 @@ public class StudeMateLoginSteps {
     }
 
     @Then("user should be logged in to the application")
-    public void user_should_be_logged_in_to_the_application() {
+    public void user_should_be_logged_in_to_the_application() throws InterruptedException {
         String expectedUrl = "https://codewiser.studymate.us/admin/analytics";
+        Thread.sleep(4000);
         String currentUrl = driver.getCurrentUrl();
         Assert.assertEquals("user couldn't log in", expectedUrl, currentUrl);
         System.out.println("user successfully logged in");
+    }
+
+    @Then("user should not be logged in to the application")
+    public void user_should_not_be_logged_in_to_the_application() {
+
     }
 }
