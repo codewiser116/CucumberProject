@@ -24,13 +24,13 @@ public class StudeMateLoginSteps {
     @When("user enters email {string} to the email field")
     public void user_enters_email_to_the_email_field(String email) {
         loginPage.emailInput.sendKeys(email);
-        System.out.println("user enters email: " + Config.getProperty("email"));
+        System.out.println("user enters email: " + email);
     }
 
     @When("user enters password {string} to the password field")
     public void user_enters_password_to_the_password_field(String password) {
         loginPage.passwordInput.sendKeys(password);
-        System.out.println("user enters password: " + Config.getProperty("password"));
+        System.out.println("user enters password: " + password);
     }
 
     @Then("user performs click action on the login button")
@@ -48,8 +48,13 @@ public class StudeMateLoginSteps {
         System.out.println("user successfully logged in");
     }
 
-    @Then("user should not be logged in to the application")
-    public void user_should_not_be_logged_in_to_the_application() {
-
+    @Then("user should see error message")
+    public void user_should_see_error_message() {
+        String expectedError = "Email is not valid!";
+        //Thread.sleep(2);
+        String actualError = loginPage.emailNotValidError.getText();
+        System.out.println("actual error text is: " + actualError);
+        Assert.assertEquals("error message is not displayed", expectedError, actualError);
+        System.out.println("Expected error displayed");
     }
 }

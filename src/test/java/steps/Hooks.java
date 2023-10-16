@@ -16,5 +16,4 @@ public class Hooks {
         Driver.closeDriver();
         System.out.println("closed window");
     }
-
 }
