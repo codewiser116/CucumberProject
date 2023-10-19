@@ -4,6 +4,7 @@ Feature: all login tests scenarios are in this file
   Background:
     Given user navigates to login page
 
+
   @loginPositive
   Scenario: user logs in with valid credentials
     When user enters email "admin@codewise.com" to the email field
@@ -23,3 +24,8 @@ Feature: all login tests scenarios are in this file
       | can12@gmail | xyz123   |
       | sindy12     | aindy123 |
       | john12      | john123  |
+
+
+
+
+
