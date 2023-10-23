@@ -4,8 +4,9 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Assert;
 import org.junit.Test;
+import utilities.CAshwiseAuthorizationToken;
 
-public class CashWiseBankAccount {
+public class CashWiseBankAccountTest {
 
     @Test
     public void getAllBankAccount() {
