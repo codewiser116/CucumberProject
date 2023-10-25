@@ -2,10 +2,15 @@ package api;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.javafaker.Faker;
+import entities.CustomResponses;
+import entities.RequestBody;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
+import org.junit.Assert;
 import org.junit.Test;
+import utilities.APIRunner;
 import utilities.CAshwiseAuthorizationToken;
 import utilities.Config;
 
@@ -43,7 +48,7 @@ public class CashwiseSellerTest {
     @Test
     public void createSeller() throws JsonProcessingException {
         String token = CAshwiseAuthorizationToken.getToken();
-        String url = Config.getProperty("cashWiseURI") + "/api/myaccount/sellers/";
+        String url = Config.getProperty("cashWiseURI") + "/api/myaccount/sellers";
         RequestBody requestBody = new RequestBody();
         requestBody.setCompany_name("MCDonalds");
         requestBody.setSeller_name("Joshua");
@@ -57,10 +62,84 @@ public class CashwiseSellerTest {
         System.out.println("status code: " + response.statusCode());
         response.prettyPrint();
 
+        //we hit createSeller API, which returns us created seller with seller id, now we want to hit
+        //getSeller API with that id that we received from response
         ObjectMapper mapper = new ObjectMapper();
         CustomResponses customResponses = mapper.readValue(response.asString(), CustomResponses.class);
         System.out.println("seller id : " + customResponses.getSeller_id());
+        Assert.assertEquals(200, response.statusCode());
     }
 
+    //create 15 users
+    @Test
+    public void createManySeller() {
+        String token = CAshwiseAuthorizationToken.getToken();
+        String url = Config.getProperty("cashWiseURI") + "/api/myaccount/sellers";
+        Faker faker = new Faker();
 
+        RequestBody requestBody = new RequestBody();
+        for (int i = 0; i < 10; i++) {
+            requestBody.setCompany_name(faker.company().name());
+            requestBody.setSeller_name(faker.name().fullName());
+            requestBody.setEmail(faker.internet().emailAddress());
+            requestBody.setPhone_number(faker.phoneNumber().phoneNumber());
+            requestBody.setAddress(faker.address().fullAddress());
+
+            Response response = RestAssured.given().auth().oauth2(token)
+                    .contentType(ContentType.JSON).body(requestBody).post(url);
+
+            // System.out.println("status code: " + response.statusCode());
+            response.prettyPrint();
+        }
+    }
+
+    @Test
+    public void getEmailsOfAlSellers() throws JsonProcessingException {
+        String token = CAshwiseAuthorizationToken.getToken();
+        String url = Config.getProperty("cashWiseURI") + "/api/myaccount/sellers";
+        Map<String, Object> params = new HashMap<>();
+        params.put("isArchived", false);
+        params.put("page", 2);
+        params.put("size", 10);
+
+        Response response = RestAssured.given().auth().oauth2(token).params(params)
+                .get(url);
+
+        System.out.println("status code: " + response.statusCode());
+
+        ObjectMapper mapper = new ObjectMapper();
+
+        CustomResponses customResponse = mapper.readValue(response.asString(), CustomResponses.class);
+
+        int size = customResponse.getResponses().size();
+
+        for (int i = 0; i < size; i++) {
+            System.out.println("user's email: " + customResponse.getResponses().get(i)
+                    .getEmail());
+        }
+    }
+
+    @Test
+    public void getSeller() {
+        String path = "/api/myaccount/sellers/1853";
+        APIRunner.runGET(path);
+        System.out.println("seller's name: " + APIRunner.getCustomResponses().getSeller_name());
+        System.out.println("seller's email: " + APIRunner.getCustomResponses().getEmail());
+    }
+
+    @Test
+    public void getSellersList() {
+        String path = "/api/myaccount/sellers";
+        Map<String, Object> params = new HashMap<>();
+        params.put("isArchived", false);
+        params.put("page", 1);
+
+        APIRunner.runGET(path, params);
+
+        System.out.println(APIRunner.getCustomResponses().getResponseBody());
+        //get company name of each seller
+        //use loop, use Custom Response class to get company_name
+        //print total number of seller
+    }
 }
+
