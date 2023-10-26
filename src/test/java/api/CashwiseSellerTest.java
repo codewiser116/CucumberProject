@@ -132,14 +132,73 @@ public class CashwiseSellerTest {
         String path = "/api/myaccount/sellers";
         Map<String, Object> params = new HashMap<>();
         params.put("isArchived", false);
-        params.put("page", 1);
+        params.put("page", 3);
+        params.put("size", 10);
 
         APIRunner.runGET(path, params);
 
         System.out.println(APIRunner.getCustomResponses().getResponseBody());
-        //get company name of each seller
-        //use loop, use Custom Response class to get company_name
-        //print total number of seller
+        int counter = 0;
+        for (CustomResponses cr: APIRunner.getCustomResponses().getResponses()) {
+            //System.out.println("company name: " + cr.getCompanyName());
+            counter ++;
+        }
+        System.out.println("total: " + counter);
+    }
+
+    @Test
+    public void createNewSeller() {
+        Faker faker = new Faker();
+        String path = "/api/myaccount/sellers";
+        RequestBody requestBody = new RequestBody();
+        requestBody.setCompany_name(faker.company().name());
+        requestBody.setSeller_name(faker.name().fullName());
+        requestBody.setEmail(faker.internet().emailAddress());
+        requestBody.setPhone_number(faker.phoneNumber().phoneNumber());
+        requestBody.setAddress(faker.address().fullAddress());
+
+        APIRunner.runPOST(path, requestBody);
+        System.out.println(APIRunner.getCustomResponses().getResponseBody());
+    }
+
+    //create seller -> hit create seller API
+    //get response and from that response get seller id
+    //get seller -> hit get seller API using seller id from response of previous API hit
+    //cross check if seller id in create API and seller id in get API are matching.
+
+    @Test
+    public void singSellerCreation () {
+        Faker faker = new Faker();
+        String path = "/api/myaccount/sellers";
+        RequestBody requestBody = new RequestBody();
+        String company = faker.company().name();
+        String sellerName = faker.name().fullName();
+        String email = faker.internet().emailAddress();
+        String phoneNumber = faker.phoneNumber().phoneNumber();
+        String address = faker.address().fullAddress();
+
+        requestBody.setCompany_name(company);
+        requestBody.setSeller_name(sellerName);
+        requestBody.setEmail(email);
+        requestBody.setPhone_number(phoneNumber);
+        requestBody.setAddress(address);
+
+        APIRunner.runPOST(path, requestBody);
+
+        //getting seller id from above API hit
+        int id = APIRunner.getCustomResponses().getSeller_id();
+        System.out.println("seller id from create seller API: " + id);
+
+        //now hit get seller API
+
+        String pathForGetSeller = "/api/myaccount/sellers/" + id;
+        APIRunner.runGET(pathForGetSeller);
+
+        Assert.assertEquals(company, APIRunner.getCustomResponses().getCompanyName());
+        Assert.assertEquals(sellerName, APIRunner.getCustomResponses().getSeller_name());
+        Assert.assertEquals(email, APIRunner.getCustomResponses().getEmail());
+        Assert.assertEquals(phoneNumber, APIRunner.getCustomResponses().getPhone_number());
+        Assert.assertEquals(address, APIRunner.getCustomResponses().getAddress());
     }
 }
 

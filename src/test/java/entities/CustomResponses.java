@@ -1,6 +1,7 @@
 package entities;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import lombok.Data;
 
 import java.util.List;
@@ -17,4 +18,12 @@ public class CustomResponses {
     private String seller_name;
     private  String responseBody;
 
+    @JsonPropertyOrder("company_name")
+    private String companyName;
+    private  String phone_number;
+    private String address;
+
+    private CustomResponses business_area;
+    private String ruTitle;
+    private String enTitle;
 }
