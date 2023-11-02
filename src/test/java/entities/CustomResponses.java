@@ -26,4 +26,6 @@ public class CustomResponses {
     private CustomResponses business_area;
     private String ruTitle;
     private String enTitle;
+    private CustomResponses category;
+    private Service service_type;
 }

@@ -4,6 +4,7 @@ import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.Assert;
 import org.junit.Test;
+import utilities.APIRunner;
 import utilities.CAshwiseAuthorizationToken;
 
 public class CashWiseBankAccountTest {
@@ -48,5 +49,11 @@ public class CashWiseBankAccountTest {
             Assert.assertFalse("bank account is empty" + i, balance1.trim().isEmpty());
         }
         //print account name, account type and balance for all bank account
+    }
+
+    @Test
+    public void getBankAccount() {
+        String path = "/api/myaccount/bankaccount";
+        APIRunner.runGET(path);
     }
 }
