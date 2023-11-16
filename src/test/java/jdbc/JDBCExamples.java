@@ -157,6 +157,7 @@ public class JDBCExamples {
         Connection connection = OracleDBConnection.getConnection();
         String query = "DELETE from employees where salary < ?";
 
+
         try {
             PreparedStatement preparedStatement = connection.prepareStatement(query);
             preparedStatement.setInt(1, salary);
